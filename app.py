@@ -35,13 +35,14 @@ st.write("Predictions for all trains in the dataset")
 
 # Load dataset automatically
 try:
-    df = pd.read_csv("Mumbai Local Train Dataset.csv")  # make sure this CSV is in your project folder
+    df = pd.read_csv("Mumbai Local Train Dataset.csv", encoding='latin1')
 except FileNotFoundError:
-    st.error("Dataset 'Mumbai Local Train Dataset.csv' not found. Please add it to the project folder.")
+    st.error("Dataset not found. Please add the CSV to the project folder.")
+    st.stop()
+except UnicodeDecodeError:
+    st.error("Failed to read CSV due to encoding issues. Try opening the file and saving it as UTF-8.")
     st.stop()
 
-st.subheader("Train Data")
-st.dataframe(df)
 
 # Define features
 numeric_features = ['Distance_km', 'Time_min', 'Speed_kmph', 'Passengers_daily', 'Expected_time_min']
