@@ -10,9 +10,6 @@ from sklearn.linear_model import LinearRegression
 # Define the pipeline
 # ------------------------------
 def create_pipeline(numeric_features, categorical_features):
-    """
-    Create a scikit-learn pipeline with preprocessing and model
-    """
     numeric_transformer = StandardScaler()
     categorical_transformer = OneHotEncoder(handle_unknown='ignore')
 
@@ -25,7 +22,7 @@ def create_pipeline(numeric_features, categorical_features):
 
     pipeline = Pipeline(steps=[
         ('preprocessor', preprocessor),
-        ('regressor', LinearRegression())  # Replace with your trained model
+        ('regressor', LinearRegression())  # Replace with trained model
     ])
 
     return pipeline
@@ -33,37 +30,38 @@ def create_pipeline(numeric_features, categorical_features):
 # ------------------------------
 # Streamlit App UI
 # ------------------------------
-st.title("Mumbai Train Delay Prediction")
+st.title("Mumbai Train Delay Predictions")
+st.write("Predictions for all trains in the dataset")
 
-st.write("""
-Upload a CSV file containing the following columns:
-'Station', 'Line', 'Distance_km', 'Time_min', 'Speed_kmph', 'Passengers_daily', 'Expected_time_min', 'Delay_min'
-""")
+# Load dataset automatically
+try:
+    df = pd.read_csv("mumbai_trains.csv")  # make sure this CSV is in your project folder
+except FileNotFoundError:
+    st.error("Dataset 'mumbai_trains.csv' not found. Please add it to the project folder.")
+    st.stop()
 
-uploaded_file = st.file_uploader("Upload CSV", type=["csv"])
+st.subheader("Train Data")
+st.dataframe(df)
 
-if uploaded_file:
-    df = pd.read_csv(uploaded_file)
-    st.subheader("Input Data")
-    st.dataframe(df)
+# Define features
+numeric_features = ['Distance_km', 'Time_min', 'Speed_kmph', 'Passengers_daily', 'Expected_time_min']
+categorical_features = ['Station', 'Line']
 
-    # Define features
-    numeric_features = ['Distance_km', 'Time_min', 'Speed_kmph', 'Passengers_daily', 'Expected_time_min']
-    categorical_features = ['Station', 'Line']
+# Create pipeline
+pipeline = create_pipeline(numeric_features, categorical_features)
 
-    # Create pipeline
-    pipeline = create_pipeline(numeric_features, categorical_features)
+# Dummy target for fitting (since we don't train here)
+y_dummy = np.zeros(len(df))
+pipeline.fit(df, y_dummy)
 
-    # Dummy target for fitting
-    y_dummy = np.zeros(len(df))
-    pipeline.fit(df, y_dummy)
+# Make predictions
+predictions = pipeline.predict(df)
+df['Predicted_Delay_min'] = predictions
 
-    # Make predictions
-    predictions = pipeline.predict(df)
+st.subheader("Predicted Delays")
+st.dataframe(df)
 
-    st.subheader("Predictions")
-    df['Predicted_Delay_min'] = predictions
-    st.dataframe(df)
+# Optional: show some summary stats
+st.subheader("Summary Statistics")
+st.write(df['Predicted_Delay_min'].describe())
 
-else:
-    st.info("Please upload a CSV file to make predictions.")
