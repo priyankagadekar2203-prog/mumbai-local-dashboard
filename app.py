@@ -3,7 +3,7 @@ import pandas as pd
 import joblib
 
 # Load model
-model = joblib.load("delay_model.pkl")
+pipeline = joblib.load("delay_model.pkl")
 
 st.title("🚆 Mumbai Local Train Delay Analytics")
 
