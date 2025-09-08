@@ -18,7 +18,7 @@ st.write("Predictions for all trains from Git ZIP dataset")
 # ------------------------------
 # Download ZIP from GitHub
 # ------------------------------
-zip_url = "https://github.com/<your-username>/<your-repo>/raw/main/mumbai%20local%20project.zip"  # replace with your raw GitHub ZIP URL
+zip_url = "https://github.com/PriyankaGadekar/mumbai-local-dashboard/raw/main/mumbai%20local%20project.zip"
 
 try:
     st.info("Downloading dataset from GitHub...")
