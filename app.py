@@ -18,13 +18,13 @@ st.write("Predictions for all trains from Git ZIP dataset")
 # ------------------------------
 # Download ZIP from GitHub
 # ------------------------------
-zip_url = "https://github.com/yourusername/yourrepo/raw/main/mumbai_local_project.zip"  # replace with your Git ZIP URL
+zip_url = "https://github.com/<your-username>/<your-repo>/raw/main/mumbai%20local%20project.zip"  # replace with your raw GitHub ZIP URL
 
 try:
-    st.info("Downloading dataset from Git...")
+    st.info("Downloading dataset from GitHub...")
     response = requests.get(zip_url)
     if response.status_code != 200:
-        st.error("Failed to download ZIP from GitHub")
+        st.error("Failed to download ZIP from GitHub. Check the raw URL.")
         st.stop()
 
     # Load ZIP into memory
@@ -34,7 +34,7 @@ try:
     zip_files = zip_file.namelist()
     st.write("Files in ZIP:", zip_files)
 
-    # Pick the CSV file (replace with actual CSV name inside ZIP)
+    # Pick the CSV file (first CSV in ZIP)
     csv_name = [f for f in zip_files if f.endswith(".csv")][0]
 
     # Read CSV into pandas
@@ -70,7 +70,7 @@ preprocessor = ColumnTransformer(
 
 pipeline = Pipeline(steps=[
     ('preprocessor', preprocessor),
-    ('regressor', LinearRegression())  # Replace with trained model if available
+    ('regressor', LinearRegression())  # Replace with your trained model
 ])
 
 # ------------------------------
@@ -91,5 +91,6 @@ st.dataframe(df)
 # Optional: summary
 st.subheader("Summary Statistics")
 st.write(df['Predicted_Delay_min'].describe())
+
 
 
