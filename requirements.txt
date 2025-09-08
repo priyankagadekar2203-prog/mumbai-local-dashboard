@@ -1,7 +1,12 @@
-streamlit
+# Core libraries
 pandas
 numpy
 matplotlib
+seaborn
 scikit-learn
-joblib
 
+# Optional / Recommended for smoother usage
+jupyter          # to run notebooks locally
+notebook         # Jupyter Notebook interface
+ipykernel        # enables kernel execution
+jupyterlab       # if user prefers JupyterLab
