@@ -4,6 +4,7 @@ import joblib
 
 # Load model
 pipeline = joblib.load("delay_model.pkl")
+y_pred = pipeline.predict(X_test)
 
 st.title("🚆 Mumbai Local Train Delay Analytics")
 
