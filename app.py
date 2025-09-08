@@ -35,9 +35,9 @@ st.write("Predictions for all trains in the dataset")
 
 # Load dataset automatically
 try:
-    df = pd.read_csv("mumbai_trains.csv")  # make sure this CSV is in your project folder
+    df = pd.read_csv("Mumbai Local Train Dataset.csv")  # make sure this CSV is in your project folder
 except FileNotFoundError:
-    st.error("Dataset 'mumbai_trains.csv' not found. Please add it to the project folder.")
+    st.error("Dataset 'Mumbai Local Train Dataset.csv' not found. Please add it to the project folder.")
     st.stop()
 
 st.subheader("Train Data")
