@@ -1,23 +1,69 @@
 import streamlit as st
 import pandas as pd
-import joblib
+import numpy as np
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler, OneHotEncoder
+from sklearn.compose import ColumnTransformer
+from sklearn.linear_model import LinearRegression
 
-# Load model
-pipeline = joblib.load("delay_model.pkl")
-y_pred = pipeline.predict(X_test)
+# ------------------------------
+# Define the pipeline
+# ------------------------------
+def create_pipeline(numeric_features, categorical_features):
+    """
+    Create a scikit-learn pipeline with preprocessing and model
+    """
+    numeric_transformer = StandardScaler()
+    categorical_transformer = OneHotEncoder(handle_unknown='ignore')
 
-st.title("🚆 Mumbai Local Train Delay Analytics")
+    preprocessor = ColumnTransformer(
+        transformers=[
+            ('num', numeric_transformer, numeric_features),
+            ('cat', categorical_transformer, categorical_features)
+        ]
+    )
 
-# User inputs
-distance = st.number_input("Distance (km)", min_value=1.0, step=1.0)
-speed = st.number_input("Speed (kmph)", min_value=1.0, step=1.0)
-passengers = st.number_input("Passengers (daily)", min_value=1000, step=1000)
-station = st.text_input("Station Name")
-line = st.text_input("Line Name")
+    pipeline = Pipeline(steps=[
+        ('preprocessor', preprocessor),
+        ('regressor', LinearRegression())  # Replace with your trained model
+    ])
 
-if st.button("Predict Delay (minutes)"):
-    input_data = pd.DataFrame([[distance, speed, passengers, station, line]],
-                              columns=["Distance_km", "Speed_kmph", "Passengers_daily", "Station", "Line"])
-    prediction = model.predict(input_data)[0]
-    st.success(f"⏱ Predicted Delay: {prediction:.2f} minutes")
+    return pipeline
 
+# ------------------------------
+# Streamlit App UI
+# ------------------------------
+st.title("Mumbai Train Delay Prediction")
+
+st.write("""
+Upload a CSV file containing the following columns:
+'Station', 'Line', 'Distance_km', 'Time_min', 'Speed_kmph', 'Passengers_daily', 'Expected_time_min', 'Delay_min'
+""")
+
+uploaded_file = st.file_uploader("Upload CSV", type=["csv"])
+
+if uploaded_file:
+    df = pd.read_csv(uploaded_file)
+    st.subheader("Input Data")
+    st.dataframe(df)
+
+    # Define features
+    numeric_features = ['Distance_km', 'Time_min', 'Speed_kmph', 'Passengers_daily', 'Expected_time_min']
+    categorical_features = ['Station', 'Line']
+
+    # Create pipeline
+    pipeline = create_pipeline(numeric_features, categorical_features)
+
+    # Dummy target for fitting
+    y_dummy = np.zeros(len(df))
+    pipeline.fit(df, y_dummy)
+
+    # Make predictions
+    predictions = pipeline.predict(df)
+
+    st.subheader("Predictions")
+    df['Predicted_Delay_min'] = predictions
+    st.dataframe(df)
+
+else:
+    st.info("Please upload a CSV file to make predictions.")
